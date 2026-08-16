@@ -11,7 +11,7 @@ export async function fetchRssFeed(feedUrl, feedName = 'Newsletter') {
 
   try {
     const response = await fetch(feedUrl, {
-      headers: { 
+      headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AI-Research-Intelligence-Pipeline/1.0',
         'Accept': 'application/rss+xml, application/atom+xml, application/xml, text/xml'
       },
@@ -30,12 +30,12 @@ export async function fetchRssFeed(feedUrl, feedName = 'Newsletter') {
     const parsed = parser.parse(xmlData);
 
     let items = [];
-
+    //test commit change
     // Support standard RSS 2.0 (<channel><item>)
     if (parsed?.rss?.channel?.item) {
       const rawItems = parsed.rss.channel.item;
       items = Array.isArray(rawItems) ? rawItems : [rawItems];
-    } 
+    }
     // Support Atom feeds (<feed><entry>)
     else if (parsed?.feed?.entry) {
       const rawEntries = parsed.feed.entry;
