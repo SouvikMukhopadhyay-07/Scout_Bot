@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusResearch AI | Autonomous Scientific Stream & Topic Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Navigation Bar -->
+    <header class="navbar">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="title">NexusResearch <span class="badge-ai">AI ENGINE</span></span>
+          <span class="subtitle">Continuous Research Ingestion & Topic Synthesis</span>
+        </div>
+      </div>
+
+      <div class="nav-metrics">
+        <div class="metric-chip" id="metric-docs">
+          <span class="chip-label">Indexed Documents</span>
+          <span class="chip-val" id="stat-docs-count">--</span>
+        </div>
+        <div class="metric-chip" id="metric-topics">
+          <span class="chip-label">Emergent Topics</span>
+          <span class="chip-val" id="stat-topics-count">--</span>
+        </div>
+        <div class="metric-chip" id="metric-store">
+          <span class="chip-label">Storage Engine</span>
+          <span class="chip-val highlight" id="stat-db-type">PostgreSQL / Local</span>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button id="btn-run-pipeline" class="btn btn-primary glow">
+          <span class="btn-icon">⚡</span>
+          <span class="btn-text">Run Pipeline</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Navigation Tabs -->
+    <nav class="sub-nav">
+      <div class="tab-list">
+        <button class="tab-item active" data-tab="topics-tab">
+          <span class="tab-icon">✨</span> Topic Digests
+        </button>
+        <button class="tab-item" data-tab="graph-tab">
+          <span class="tab-icon">🕸️</span> Topic Cluster Graph
+        </button>
+        <button class="tab-item" data-tab="docs-tab">
+          <span class="tab-icon">📚</span> Document Repository
+        </button>
+        <button class="tab-item" data-tab="sources-tab">
+          <span class="tab-icon">⚙️</span> Sources & Feeds
+        </button>
+        <button class="tab-item" data-tab="export-tab">
+          <span class="tab-icon">📤</span> Export Digest
+        </button>
+      </div>
+
+      <div class="live-status-pill">
+        <span class="pulse-dot"></span>
+        <span id="pipeline-status-text">Ready</span>
+      </div>
+    </nav>
+
+    <!-- Main Content Body -->
+    <main class="main-content">
+      
+      <!-- TAB 1: TOPIC DIGESTS -->
+      <section id="topics-tab" class="tab-panel active">
+        <div class="panel-header">
+          <div>
+            <h2>Emergent Topic Intelligence</h2>
+            <p class="text-muted">Dynamic clusters ranked by cross-source agreement (arXiv preprints + newsletters), recency, and user feedback.</p>
+          </div>
+          <div class="filter-controls">
+            <input type="text" id="topic-search-input" placeholder="Search topic insights, keywords..." class="search-input">
+            <button id="btn-refresh-topics" class="btn btn-secondary">↻ Refresh</button>
+          </div>
+        </div>
+
+        <div id="topics-container" class="topics-grid">
+          <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading topic digests from PostgreSQL knowledge store...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: INTERACTIVE CLUSTER GRAPH -->
+      <section id="graph-tab" class="tab-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Topic Clustering & Citation Graph</h2>
+            <p class="text-muted">Interactive 2D graph visualizer mapping emergent topic centroids to constituent research papers and newsletter articles.</p>
+          </div>
+          <div class="graph-legend">
+            <span class="legend-item"><span class="node-dot topic"></span> Topic Centroid</span>
+            <span class="legend-item"><span class="node-dot arxiv"></span> arXiv Paper</span>
+            <span class="legend-item"><span class="node-dot newsletter"></span> Newsletter</span>
+            <span class="legend-item"><span class="node-dot search"></span> Web Search</span>
+          </div>
+        </div>
+
+        <div class="canvas-wrapper">
+          <canvas id="cluster-canvas"></canvas>
+          <div id="graph-tooltip" class="graph-tooltip"></div>
+        </div>
+      </section>
+
+      <!-- TAB 3: DOCUMENT REPOSITORY -->
+      <section id="docs-tab" class="tab-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Knowledge Store Documents</h2>
+            <p class="text-muted">Explore normalized and section-chunked research papers and industry articles stored in PostgreSQL.</p>
+          </div>
+          <div class="filter-controls">
+            <select id="doc-source-filter" class="select-input">
+              <option value="">All Sources</option>
+              <option value="arxiv">arXiv Preprints</option>
+              <option value="newsletter">Newsletters / RSS</option>
+              <option value="search">Web Discovery</option>
+            </select>
+            <input type="text" id="doc-search-input" placeholder="Filter title, abstract, authors..." class="search-input">
+          </div>
+        </div>
+
+        <div id="docs-table-container" class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Source</th>
+                <th>Title & Details</th>
+                <th>Category</th>
+                <th>Authors</th>
+                <th>Published</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="docs-tbody">
+              <!-- Dynamically Populated -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- TAB 4: SOURCES & FEEDS CONFIG -->
+      <section id="sources-tab" class="tab-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Tracked Streams & Connectors</h2>
+            <p class="text-muted">Manage scheduled feeds for arXiv categories, Substack RSS feeds, and search topics.</p>
+          </div>
+          <button id="btn-add-source-modal" class="btn btn-primary">+ Add New Stream</button>
+        </div>
+
+        <div class="sources-grid" id="sources-container">
+          <!-- Dynamically populated source cards -->
+        </div>
+      </section>
+
+      <!-- TAB 5: DIGEST EXPORT -->
+      <section id="export-tab" class="tab-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Export & Delivery Generator</h2>
+            <p class="text-muted">Export clean Markdown, Email briefs, or Slack formatted digests for team sharing.</p>
+          </div>
+          <div class="export-actions">
+            <button id="btn-copy-md" class="btn btn-primary">📋 Copy Markdown</button>
+            <button id="btn-download-md" class="btn btn-secondary">💾 Download .md</button>
+          </div>
+        </div>
+
+        <div class="export-preview-card">
+          <div class="preview-header">
+            <span>Markdown Digest Output</span>
+            <span class="badge-format">GFM Compatible</span>
+          </div>
+          <textarea id="markdown-export-preview" class="code-preview" readonly></textarea>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Pipeline Run Progress Modal -->
+  <div id="modal-run-pipeline" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>⚡ Running Research Intelligence Pipeline</h3>
+        <span class="modal-close" id="btn-close-modal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="pipeline-stepper">
+          <div class="step-item" id="step-ingest">
+            <div class="step-icon">1</div>
+            <div class="step-content">
+              <strong>Source Ingestion</strong>
+              <p>Pulling arXiv Atom feeds & RSS newsletters</p>
+            </div>
+          </div>
+          <div class="step-item" id="step-process">
+            <div class="step-icon">2</div>
+            <div class="step-content">
+              <strong>Cleaning & Section Chunking</strong>
+              <p>Normalizing text and parsing semantic sections</p>
+            </div>
+          </div>
+          <div class="step-item" id="step-dedup">
+            <div class="step-icon">3</div>
+            <div class="step-content">
+              <strong>Deduplication & DB Storage</strong>
+              <p>Indexing unique papers into PostgreSQL</p>
+            </div>
+          </div>
+          <div class="step-item" id="step-cluster">
+            <div class="step-icon">4</div>
+            <div class="step-content">
+              <strong>Topic Clustering & Ranking</strong>
+              <p>TF-IDF graph communities & cross-source scoring</p>
+            </div>
+          </div>
+          <div class="step-item" id="step-synth">
+            <div class="step-icon">5</div>
+            <div class="step-content">
+              <strong>Multi-Agent Synthesis</strong>
+              <p>Generating structured topic digests & citations</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="pipeline-terminal">
+          <div class="terminal-bar">
+            <span>Pipeline Execution Logs</span>
+          </div>
+          <pre id="pipeline-logs-output" class="terminal-content">Waiting to start pipeline...</pre>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-modal-dismiss" class="btn btn-secondary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Stream Modal -->
+  <div id="modal-add-source" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Add Tracked Stream</h3>
+        <span class="modal-close" id="btn-close-source-modal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Stream Type</label>
+          <select id="new-source-type" class="select-input">
+            <option value="arxiv">arXiv Category (e.g. cat:cs.AI, cat:cs.LG)</option>
+            <option value="rss">Newsletter / Blog RSS Feed URL</option>
+            <option value="search">Keyword Search Monitor</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Display Name</label>
+          <input type="text" id="new-source-name" class="search-input" placeholder="e.g. arXiv cs.CV (Computer Vision)">
+        </div>
+        <div class="form-group">
+          <label>Query or Feed URL</label>
+          <input type="text" id="new-source-query" class="search-input" placeholder="e.g. cat:cs.CV or https://example.com/feed.xml">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-cancel-source" class="btn btn-secondary">Cancel</button>
+        <button id="btn-save-source" class="btn btn-primary">Save Stream</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
